@@ -110,6 +110,10 @@ public class MobiContentHeader extends MobiContent {
     private int datpRecordIndex = -1;
     private int guideIndex = -1;
 
+    // derived from extraRecordDataFlags
+    private int trailersCount = 0;
+    private boolean multibyte = false;
+
     private EXTHHeader exthHeader;
     private byte[] remainder;
     // end of useful data
@@ -192,8 +196,8 @@ public class MobiContentHeader extends MobiContent {
         if (headerLength >= 232) {
             srcsRecordCount = getInt(content, 228, 4);
         }
-        if (headerLength >= 244) {
-            extraRecordDataFlags = getInt(content, 240, 4);
+        if (headerLength >= 0xE4 && minVersion >= 5) {
+            setExtraRecordDataFlags(getInt(content, 240, 4));
         }
         if (headerLength >= 248) {
             indxRecordIndex = getInt(content, 244, 4);
@@ -217,7 +221,11 @@ public class MobiContentHeader extends MobiContent {
 
         int remainderOffsetStart = DEFAULT_HEADER_LENGTH + MOBI_HEADER_REST + exthHeaderSize();
         int remainderOffsetLength = (int) recordDataLength - remainderOffsetStart;
-        remainder = getBytes(content, remainderOffsetStart, remainderOffsetLength);
+        if (remainderOffsetLength > 0) {
+            remainder = getBytes(content, remainderOffsetStart, remainderOffsetLength);
+        } else {
+            remainder = new byte[0];
+        }
 
         return this;
     }
@@ -607,5 +615,26 @@ public class MobiContentHeader extends MobiContent {
         this.huffmanRecordCount = huffmanRecordCount;
     }
 
+    public int getExtraRecordDataFlags() {
+        return extraRecordDataFlags;
+    }
 
+    public void setExtraRecordDataFlags(int extraRecordDataFlags) {
+        this.extraRecordDataFlags = extraRecordDataFlags;
+        this.trailersCount = 0;
+        for (int flags = extraRecordDataFlags & 0xFFFF; flags > 1; flags >>= 1) {
+            if (0 != (flags & 2)) {
+                this.trailersCount++;
+            }
+        }
+        this.multibyte = ((extraRecordDataFlags & 1) > 0);
+    }
+
+    public int getTrailersCount() {
+        return trailersCount;
+    }
+
+    public boolean isMultibyte() {
+        return multibyte;
+    }
 }

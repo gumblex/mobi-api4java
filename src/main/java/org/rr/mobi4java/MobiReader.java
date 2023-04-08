@@ -84,7 +84,7 @@ public class MobiReader {
         long recordDataOffset = getRecordDataOffset(pdbHeader, index);
         long recordDataLength = getRecordDataLength(pdbHeader, index);
         CONTENT_TYPE type = evaluateType(pdbHeader, mobiHeader, index, mobiData, recordDataOffset, recordDataLength);
-        return readContent(mobiData, type, recordDataOffset, recordDataLength);
+        return readContent(mobiHeader, mobiData, type, recordDataOffset, recordDataLength);
     }
 
     private long getRecordDataOffset(PDBHeader pdbHeader, int idx) {

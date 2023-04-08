@@ -1,6 +1,6 @@
 package org.rr.mobi4java.exth;
 
-import static org.apache.commons.lang3.CharEncoding.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
@@ -16,7 +16,7 @@ public class ASINRecordDelegate extends StringRecordDelegate implements RecordDe
 	public void setASIN(String asin) {
 		try {
 			if(isValidASIN(asin)) {
-				setStringData(asin, UTF_8);
+				setStringData(asin, UTF_8.name());
 			} else {
 				throw new IllegalArgumentException("The asin " + asin + " is not a valid asin number.");
 			}
@@ -26,7 +26,7 @@ public class ASINRecordDelegate extends StringRecordDelegate implements RecordDe
 	}
 	
 	public String getASIN() {
-		return getAsString(UTF_8);
+		return getAsString(UTF_8.name());
 	}
 	
 	private boolean isValidASIN(String asin) {

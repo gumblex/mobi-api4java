@@ -1,6 +1,6 @@
 package org.rr.mobi4java.exth;
 
-import static org.apache.commons.lang3.CharEncoding.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
@@ -21,7 +21,7 @@ public class ISBNRecordDelegate extends StringRecordDelegate implements RecordDe
 	public void setISBN(String isbn) {
 		try {
 			if(isValidISBN(isbn)) {
-				setStringData(isbn, UTF_8);
+				setStringData(isbn, UTF_8.name());
 			} else {
 				throw new IllegalArgumentException("The isbn " + isbn + " is not a valid isbn number.");
 			}
@@ -35,7 +35,7 @@ public class ISBNRecordDelegate extends StringRecordDelegate implements RecordDe
 	}
 
 	public String getIsbn() {
-		return getAsString(UTF_8);
+		return getAsString(UTF_8.name());
 	}
 	
 	public String getAsIsbn13() {

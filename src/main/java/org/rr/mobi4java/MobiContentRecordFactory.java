@@ -5,6 +5,7 @@ import static org.rr.mobi4java.ByteUtils.getInt;
 import static org.rr.mobi4java.ByteUtils.startsWith;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.Range;
@@ -29,13 +30,47 @@ class MobiContentRecordFactory {
         return new MobiContent(new byte[]{0, 0}, CONTENT_TYPE.END_OF_TEXT);
     }
 
-    static MobiContent readContent(byte[] mobiData, CONTENT_TYPE type, long recordDataOffset, long recordDataLength)
-            throws IOException {
+    static MobiContent readContent(
+        MobiContentHeader mobiHeader, byte[] mobiData, CONTENT_TYPE type, long recordDataOffset, long recordDataLength
+    ) throws IOException {
         byte[] mobiContent = getBytes(mobiData, (int) recordDataOffset, (int) recordDataLength);
         if (type == CONTENT_TYPE.INDEX) {
             return new MobiContentIndex(mobiContent);
+        } else if (type == CONTENT_TYPE.CONTENT) {
+            int realLength = calcContentLength(mobiContent, mobiHeader.getTrailersCount(), mobiHeader.isMultibyte());
+            byte[] contentData = Arrays.copyOfRange(mobiContent, 0, realLength);
+            return create(contentData, type);
         }
         return create(mobiContent, type);
+    }
+
+    static int calcContentLength(byte[] mobiContent, int trailersCount, boolean multibyte) {
+        int realLength = mobiContent.length;
+        for (int i = 0; i < trailersCount; i++) {
+            if (realLength < 4) {
+                return realLength;
+            }
+            int n = 0;
+            for (int j = 0; j < 4; j++) {
+                int v = mobiContent[realLength - 4 + j] & 0xff;
+                if (0 != (v & 0x80)) {
+                    n = 0;
+                }
+                n = (n << 7) | (v & 0x7f);
+            }
+            if (n > realLength) {
+                return 0;
+            }
+            realLength -= n;
+        }
+        if (multibyte) {
+            int n = (mobiContent[realLength - 1] & 3) + 1;
+            if (n > realLength) {
+                return 0;
+            }
+            realLength -= n;
+        }
+        return realLength;
     }
 
     private static MobiContent create(byte[] mobiContent, CONTENT_TYPE type) {

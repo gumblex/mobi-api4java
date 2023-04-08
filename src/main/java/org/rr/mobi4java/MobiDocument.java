@@ -7,6 +7,7 @@ import static org.rr.mobi4java.MobiUtils.removeUtfReplacementCharacter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -220,13 +221,11 @@ public class MobiDocument {
     }
 
     /**
-     * Get the mobi html formatted content.
+     * Write the mobi html formatted content to <code>outputStream</code>.
      *
-     * @return The text part if the mobi document. Never returns <code>null</code>.
      * @throws IOException
      */
-    public String getTextContent() throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    public void writeTextContent(OutputStream outputStream) throws IOException {
         List<MobiContent> contents = MobiUtils.findContentsByType(mobiContents, CONTENT_TYPE.CONTENT);
         for (MobiContent mobiContent : contents) {
             byte[] decoded = getUnPacker().inflate(mobiContent.getContent());
@@ -237,6 +236,17 @@ public class MobiDocument {
                 outputStream.write(decoded);
             }
         }
+    }
+
+    /**
+     * Get the mobi html formatted content.
+     *
+     * @return The text part if the mobi document. Never returns <code>null</code>.
+     * @throws IOException
+     */
+    public String getTextContent() throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        writeTextContent(outputStream);
         return removeUtfReplacementCharacter(outputStream.toString(getCharacterEncoding()));
     }
 
@@ -265,6 +275,7 @@ public class MobiDocument {
         mobiHeader.setTextLength(mobiText.length());
         mobiHeader.setRecordCount(chunkedMobiText.size());
         mobiHeader.setRecordSize(DEFAULT_TEXT_CONTENT_RECORD_SIZE);
+        mobiHeader.setExtraRecordDataFlags(0);
 
         // set non book index and first image index to the same value because there is no book index at this point,
         // which is usually located between these two indices.

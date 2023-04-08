@@ -4,7 +4,9 @@ import static org.rr.mobi4java.ByteUtils.getBytes;
 import static org.rr.mobi4java.ByteUtils.getString;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +18,10 @@ public class LanguageRecordDelegate implements RecordDelegate {
 
 	static {
 		try {
-			languageCodes = IOUtils.readLines(LanguageRecordDelegate.class.getResourceAsStream("/languagecodes.txt"));
+			languageCodes = IOUtils.readLines(
+				Objects.requireNonNull(LanguageRecordDelegate.class.getResourceAsStream("/languagecodes.txt")),
+				StandardCharsets.UTF_8.name()
+			);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to load language codes.", e);
 		}

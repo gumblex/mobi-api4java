@@ -1,12 +1,10 @@
 package org.rr.mobi4java.exth;
 
-import static org.apache.commons.lang3.CharEncoding.UTF_8;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Date;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -32,11 +30,7 @@ public class DateRecordDelegate extends StringRecordDelegate implements RecordDe
 	 * @throws ParseException 
 	 */
 	public Date getAsDate() throws ParseException {
-		try {
-			return DatatypeConverter.parseDate(getAsString(UTF_8)).getTime();
-		} catch(Exception e) {
-			return DateUtils.parseDate(getAsString(UTF_8), DATE_PATTERN);
-		}
+		return DateUtils.parseDate(getAsString(UTF_8.name()), DATE_PATTERN);
 	}
 
 	/**
@@ -50,7 +44,7 @@ public class DateRecordDelegate extends StringRecordDelegate implements RecordDe
 			throw new IllegalArgumentException("Value must not be null.");
 		}
 		try {
-			setStringData(DateFormatUtils.format(date, DEFAULT_DATE_FORMAT_PATTERN), UTF_8);
+			setStringData(DateFormatUtils.format(date, DEFAULT_DATE_FORMAT_PATTERN), UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Failed to set date " + date, e);
 		}

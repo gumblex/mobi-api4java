@@ -95,14 +95,13 @@ public class TestEmptyTemplate {
 		Random random = new Random();
 		StringBuilder b = new StringBuilder();
 		for(int i = 0; i < 700; i++) {
-			b.append(random.nextLong()).append(" ");
+			b.append(random.nextLong()).append("\n");
 		}
 		
 		String newContent = "<html><head></head><body><p>" + b + "</p></body></html>";
 		doc.setTextContent(newContent);
 		
 		MobiDocument newDoc = reReadDocument(doc);
-		
 		assertEquals(newContent, newDoc.getTextContent());
 	}
 }
