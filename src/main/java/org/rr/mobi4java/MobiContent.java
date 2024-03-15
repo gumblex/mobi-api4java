@@ -33,7 +33,7 @@ public class MobiContent {
 
     protected byte[] content;
 
-    private CONTENT_TYPE type;
+    private final CONTENT_TYPE type;
 
     MobiContent(byte[] content, CONTENT_TYPE type) {
         this.content = content;

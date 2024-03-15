@@ -25,11 +25,11 @@ public class MobiContentIndex extends MobiContent {
 	
 	private static final String IDENTIFIER = "INDX";
 
-	public static enum INDEX_TYPE {
+	public enum INDEX_TYPE {
 		NORMAL(0), INFLECTION(2);
 		private final int type;
 		
-    private static Map<Integer, INDEX_TYPE> map = new HashMap<Integer, INDEX_TYPE>();
+    private static final Map<Integer, INDEX_TYPE> map = new HashMap<>();
     
 		static {
 			for (INDEX_TYPE typeEnum : INDEX_TYPE.values()) {
@@ -39,7 +39,7 @@ public class MobiContentIndex extends MobiContent {
 			}
 		}
 
-		private INDEX_TYPE(final int type) {
+		INDEX_TYPE(final int type) {
 			this.type = type;
 		}
 		
@@ -78,10 +78,7 @@ public class MobiContentIndex extends MobiContent {
 	
 	private int cncxRecordCount;
 
-	private byte[] ordt1;
-	private int[] ordt2;
-
-	private byte[] unknownIndxHeaderPart;
+    private byte[] unknownIndxHeaderPart;
 	
 	private byte[] rest;
 	
@@ -132,8 +129,8 @@ public class MobiContentIndex extends MobiContent {
              * ORDT1 has 1 byte long entries, ORDT2 has 2 byte long entries
              * we only ever seem to use the seocnd but ...
 			 */
-			ordt1 = Arrays.copyOfRange(content, ordt1Offset + 4, ordt1Offset + 4 + ordtEntriesCount);
-			ordt2 = new int[ordtEntriesCount];
+            byte[] ordt1 = Arrays.copyOfRange(content, ordt1Offset + 4, ordt1Offset + 4 + ordtEntriesCount);
+            int[] ordt2 = new int[ordtEntriesCount];
 			for (int i = 0; i < ordtEntriesCount; i++) {
 				ordt2[i] = getInt(content, ordt2Offset + 4 + i * 2, 2);
 			}

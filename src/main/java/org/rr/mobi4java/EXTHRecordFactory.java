@@ -121,7 +121,7 @@ public class EXTHRecordFactory {
 	}
 
 	static EXTHRecord readEXTHRecord(byte[] mobiHeader, int offset) throws IOException {
-		EXTHRecord record = createEXTHRecord(RECORD_TYPE.valueOf(getInt(mobiHeader, offset + 0, 4)));
+		EXTHRecord record = createEXTHRecord(RECORD_TYPE.valueOf(getInt(mobiHeader, offset, 4)));
 		return record.readEXTHRecord(mobiHeader, offset);
 	}
 	

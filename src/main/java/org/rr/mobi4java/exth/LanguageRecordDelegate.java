@@ -3,7 +3,6 @@ package org.rr.mobi4java.exth;
 import static org.rr.mobi4java.ByteUtils.getBytes;
 import static org.rr.mobi4java.ByteUtils.getString;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +13,7 @@ import org.rr.mobi4java.EXTHRecord;
 
 public class LanguageRecordDelegate implements RecordDelegate {
 
-	private static List<String> languageCodes;
+	private static final List<String> languageCodes;
 
 	static {
         languageCodes = IOUtils.readLines(
@@ -23,7 +22,7 @@ public class LanguageRecordDelegate implements RecordDelegate {
         );
     }
 	
-	private EXTHRecord record;
+	private final EXTHRecord record;
 	
 	public LanguageRecordDelegate(EXTHRecord record) {
 		this.record = record;

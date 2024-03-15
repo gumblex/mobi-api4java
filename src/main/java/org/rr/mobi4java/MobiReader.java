@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class MobiReader {
      * @return A new {@link MobiDocument} instance. Never returns <code>null</code>.
      * @throws IOException
      */
-    public MobiDocument read(File file) throws FileNotFoundException, IOException {
-        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
+    public MobiDocument read(File file) throws IOException {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
             return read(in);
         }
     }

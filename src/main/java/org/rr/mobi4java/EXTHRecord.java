@@ -15,7 +15,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class EXTHRecord {
 
-    public static enum RECORD_TYPE {
+    public enum RECORD_TYPE {
         DRM_SERVER_ID(1),
         DRM_COMMERCE_ID(2),
         DRM_EBOOKBASE_BOOK_ID(3),
@@ -185,7 +185,7 @@ public class EXTHRecord {
 
         private final int type;
 
-        private static final Map<Integer, RECORD_TYPE> map = new HashMap<Integer, RECORD_TYPE>();
+        private static final Map<Integer, RECORD_TYPE> map = new HashMap<>();
 
         static {
             for (RECORD_TYPE typeEnum : RECORD_TYPE.values()) {
@@ -195,7 +195,7 @@ public class EXTHRecord {
             }
         }
 
-        private RECORD_TYPE(final int type) {
+        RECORD_TYPE(final int type) {
             this.type = type;
         }
 
