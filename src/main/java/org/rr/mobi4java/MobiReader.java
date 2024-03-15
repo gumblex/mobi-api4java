@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.rr.mobi4java.MobiContent.CONTENT_TYPE;
 
 public class MobiReader {
+    private boolean ignoreContentErrors;
 
     /**
      * Read and parse a mobi document from the given {@link File}.
@@ -65,7 +66,7 @@ public class MobiReader {
 
     private MobiContentHeader readMobiHeader(PDBHeader pdbHeader, byte[] mobiData) throws IOException {
         return MobiContentHeader.readMobiHeader(mobiData, getRecordDataOffset(pdbHeader, 0),
-                getRecordDataLength(pdbHeader, 0));
+            getRecordDataLength(pdbHeader, 0));
     }
 
     private List<MobiContent> readMobiContent(PDBHeader pdbHeader, MobiContentHeader mobiHeader, byte[] mobiData)
@@ -74,7 +75,11 @@ public class MobiReader {
         mobiContents.add(mobiHeader);
         int recordCount = pdbHeader.getRecordCount();
         for (int i = 1; i < recordCount; i++) {
-            mobiContents.add(createMobiContent(pdbHeader, mobiHeader, mobiData, i));
+            try {
+                mobiContents.add(createMobiContent(pdbHeader, mobiHeader, mobiData, i));
+            } catch (IOException e) {
+                if (!ignoreContentErrors) throw e;
+            }
         }
         return mobiContents;
     }
@@ -83,6 +88,9 @@ public class MobiReader {
             throws IOException {
         long recordDataOffset = getRecordDataOffset(pdbHeader, index);
         long recordDataLength = getRecordDataLength(pdbHeader, index);
+        if (recordDataLength < 0) {
+            throw new IOException(String.format("Record data length: %s", recordDataLength));
+        }
         CONTENT_TYPE type = evaluateType(pdbHeader, mobiHeader, index, mobiData, recordDataOffset, recordDataLength);
         return readContent(mobiHeader, mobiData, type, recordDataOffset, recordDataLength);
     }
@@ -97,5 +105,13 @@ public class MobiReader {
             return pdbHeader.getRecord(idx + 1).getRecordDataOffset() - start;
         }
         return 0;
+    }
+
+    public boolean isIgnoreContentErrors() {
+        return this.ignoreContentErrors;
+    }
+
+    public void setIgnoreContentErrors(boolean ignoreContentErrors) {
+        this.ignoreContentErrors = ignoreContentErrors;
     }
 }

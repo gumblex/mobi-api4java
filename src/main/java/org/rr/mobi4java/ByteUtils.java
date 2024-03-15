@@ -97,9 +97,8 @@ public class ByteUtils {
 
     public static int getInt(byte[] buffer) {
         int total = 0;
-        int len = buffer.length;
-        for (int i = 0; i < len; i++) {
-            total = (total << 8) + (buffer[i] & 0xff);
+        for (byte b : buffer) {
+            total = (total << 8) + (b & 0xff);
         }
 
         return total;
@@ -107,9 +106,8 @@ public class ByteUtils {
 
     public static long getLong(byte[] buffer) {
         long total = 0;
-        int len = buffer.length;
-        for (int i = 0; i < len; i++) {
-            total = (total << 8) + (buffer[i] & 0xff);
+        for (byte b : buffer) {
+            total = (total << 8) + (b & 0xff);
         }
 
         return total;

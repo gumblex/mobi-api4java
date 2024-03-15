@@ -119,7 +119,7 @@ class MobiContentRecordFactory {
     }
 
     private static boolean isContentRecord(MobiContentHeader mobiHeader, int index) {
-        return Range.<Integer>between(1, mobiHeader.getRecordCount()).contains(index);
+        return Range.of(1, mobiHeader.getRecordCount()).contains(index);
     }
 
     /**

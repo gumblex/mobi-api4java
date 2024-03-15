@@ -34,11 +34,16 @@ public class MobiContentIdxt extends MobiContent {
 		}
 		
 		indexEntriesIndices = new int[entriesCount];
+		int currentOffset = 4;
 		for (int i = 0; i < entriesCount; i++) {
-			indexEntriesIndices[i] = getInt(content, 4 + (i * 2), 2);
+			indexEntriesIndices[i] = getInt(content, currentOffset, 2);
+			currentOffset += i * 2;
 		}
-		
-		indexEntriesCount = getInt(content, 4 + (indexEntriesIndices.length * 2), 2);
+		if (currentOffset + 2 < content.length) {
+			indexEntriesCount = getInt(content, currentOffset, 2);
+		} else {
+			indexEntriesCount = entriesCount;
+		}
 	}
 	
 	@Override

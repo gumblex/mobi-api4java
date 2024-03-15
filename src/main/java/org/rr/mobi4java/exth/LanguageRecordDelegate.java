@@ -17,15 +17,11 @@ public class LanguageRecordDelegate implements RecordDelegate {
 	private static List<String> languageCodes;
 
 	static {
-		try {
-			languageCodes = IOUtils.readLines(
-				Objects.requireNonNull(LanguageRecordDelegate.class.getResourceAsStream("/languagecodes.txt")),
-				StandardCharsets.UTF_8.name()
-			);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to load language codes.", e);
-		}
-	}
+        languageCodes = IOUtils.readLines(
+            Objects.requireNonNull(LanguageRecordDelegate.class.getResourceAsStream("/languagecodes.txt")),
+            StandardCharsets.UTF_8.name()
+        );
+    }
 	
 	private EXTHRecord record;
 	

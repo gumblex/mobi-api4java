@@ -185,7 +185,7 @@ public class EXTHRecord {
 
         private final int type;
 
-        private static Map<Integer, RECORD_TYPE> map = new HashMap<Integer, RECORD_TYPE>();
+        private static final Map<Integer, RECORD_TYPE> map = new HashMap<Integer, RECORD_TYPE>();
 
         static {
             for (RECORD_TYPE typeEnum : RECORD_TYPE.values()) {

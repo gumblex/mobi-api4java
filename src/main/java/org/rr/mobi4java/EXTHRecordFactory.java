@@ -31,6 +31,10 @@ public class EXTHRecordFactory {
 		return new EXTHRecord(recordType.getType());
 	}
 	
+	public static EXTHRecord createEXTHRecord(int recordType) {
+		return new EXTHRecord(recordType);
+	}
+
 	/**
 	 * Create a new asin record with the given asin as value.
 	 * 

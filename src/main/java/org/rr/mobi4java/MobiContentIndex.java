@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.BooleanUtils.negate;
 import static org.rr.mobi4java.ByteUtils.getBytes;
 import static org.rr.mobi4java.ByteUtils.getInt;
 import static org.rr.mobi4java.ByteUtils.getString;
+import static org.rr.mobi4java.ByteUtils.startsWith;
 import static org.rr.mobi4java.ByteUtils.write;
 import static org.rr.mobi4java.ByteUtils.writeInt;
 import static org.rr.mobi4java.ByteUtils.writeString;
@@ -11,6 +12,7 @@ import static org.rr.mobi4java.ByteUtils.writeString;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +77,10 @@ public class MobiContentIndex extends MobiContent {
 	private int ordtLigtEntriesCount;
 	
 	private int cncxRecordCount;
-	
+
+	private byte[] ordt1;
+	private int[] ordt2;
+
 	private byte[] unknownIndxHeaderPart;
 	
 	private byte[] rest;
@@ -107,25 +112,44 @@ public class MobiContentIndex extends MobiContent {
 		cncxRecordCount = getInt(content, 52, 4);
 		/* 60-148: phonetizer */
 		unknownIndxHeaderPart = getBytes(content, 56, headerLength - 56);
-		
+
 		int ordtType = getInt(content, 164, 4);
 		int ordtEntriesCount = getInt(content, 168, 4);
 		int ordt1Offset = getInt(content, 172, 4);
 		int ordt2Offset = getInt(content, 176, 4);
 		int entrySize = ordtType == 0 ? 1 : 2;
-		
-		int tagxIndex = getInt(content, 180, 4);
-		int tagxNameLength = getInt(content, 184, 4);
-		if(tagxIndex > 0) {
-			tagx = new MobiContentTagx(getBytes(content, tagxIndex));
+
+		int tagxIndex2 = getInt(content, 180, 4);
+		// int tagxNameLength = getInt(content, 184, 4);
+
+		if (indexEncoding == 65002 || ordtType != 0 || ordtEntriesCount > 0) {
+			/* From KindleUnpack:
+			 * horribly hacked up ESP (sample) mobi books use two ORDT sections but never specify
+             * them in the proper place in the header.  They seem to be codepage 65002 which seems
+             * to be some sort of strange EBCDIC utf-8 or 16 encoded strings
+
+             * so we need to look for them and store them away to process leading text
+             * ORDT1 has 1 byte long entries, ORDT2 has 2 byte long entries
+             * we only ever seem to use the seocnd but ...
+			 */
+			ordt1 = Arrays.copyOfRange(content, ordt1Offset + 4, ordt1Offset + 4 + ordtEntriesCount);
+			ordt2 = new int[ordtEntriesCount];
+			for (int i = 0; i < ordtEntriesCount; i++) {
+				ordt2[i] = getInt(content, ordt2Offset + 4 + i * 2, 2);
+			}
+
+		}
+		int tagxIndex = headerLength;
+		byte[] tagx_content = getBytes(content, tagxIndex);
+		if (startsWith(tagx_content, "TAGX".getBytes())) {
+			// logger.info("Get TAGX at: {}, ({})", tagxIndex, tagxIndex2);
+			tagx = new MobiContentTagx(tagx_content);
 			List<MobiContentTagEntry> tags = tagx.getTags();
 			for (MobiContentTagEntry tag : tags) {
 				int value = tag.getControlByte() & tag.getBitmask();
 			}
-			
-			
-			MobiContentIdxt idxt = new MobiContentIdxt(getBytes(content, idxtIndex), indexCount);
-			
+
+			// MobiContentIdxt idxt = new MobiContentIdxt(getBytes(content, idxtIndex), indexCount);
 			rest = getBytes(content, tagxIndex + tagx.getSize());
 		} else {
 			rest = getBytes(content, headerLength);
